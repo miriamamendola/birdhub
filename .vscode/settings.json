@@ -1,0 +1,15 @@
+{
+    "python.terminal.activateEnvironment": false,
+    "python.pythonPath": "C:/Users/miria/zerynth3/dist/sys/python/python.exe",
+    "python.linting.pylintPath": "C:/Users/miria/zerynth3/dist/sys/python/Scripts/pylint.exe",
+    "python.autoComplete.extraPaths": [
+        "C:/Users/miria/zerynth3/dist/libs",
+        "C:/Users/miria/zerynth3/dist/libs/stdlib"
+    ],
+    "python.linting.pylintArgs": [
+        "--rcfile=C:/Users/miria/zerynth3/dist/toolchain/linter/zlintrc"
+    ],
+    "python.languageServer": "Jedi",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
+}

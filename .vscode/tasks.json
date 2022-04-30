@@ -1,0 +1,74 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Project console",
+            "type": "shell",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "command": "C:/Users/miria/zerynth3/dist/sys/python/python.exe",
+            "args": [
+                "-I",
+                "-u",
+                "C:/Users/miria/zerynth3/dist/toolchain/ztc.py",
+                "device",
+                "console",
+                "c:\\Users\\miria\\Documents\\birdhub"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [
+                {
+                    "owner": "zerynth",
+                    "fileLocation": [
+                        "absolute"
+                    ],
+                    "severity": "error",
+                    "pattern": {
+                        "regexp": "(\\[(error)]>)(.*)(\\[.*\\])(.*)(\\[(.*)\\])(.*)\\s(\\d+)",
+                        "file": 7,
+                        "line": 9,
+                        "message": 0
+                    },
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": "> Executing task: (.*)<\n\n",
+                        "endsPattern": "Zerynth Bootloader"
+                    }
+                },
+                {
+                    "owner": "zerynth",
+                    "fileLocation": [
+                        "absolute"
+                    ],
+                    "severity": "error",
+                    "pattern": [
+                        {
+                            "regexp": "Traceback(.*)"
+                        },
+                        {
+                            "regexp": "(.*)File (.*),(.*)(\\d+),",
+                            "file": 2,
+                            "line": 4,
+                            "message": 0
+                        }
+                    ],
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": "> Executing task: (.*)<\n\n",
+                        "endsPattern": "Zerynth Bootloader"
+                    }
+                }
+            ],
+            "isBackground": true
+        }
+    ]
+}
