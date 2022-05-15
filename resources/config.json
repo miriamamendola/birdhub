@@ -1,3 +1,8 @@
 {
-    
+    "FOOD_THRESH": 1.0,
+    "WATER_THRESH": 0,
+    "ANGLE": 40,
+    "FOOD_STORAGE_THRESH": 3.0,
+    "WATER_STORAGE_THRESH": 20.0,
+    "CHECKING_TIME": 5000
 }

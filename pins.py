@@ -8,18 +8,17 @@ ECHO_WS = D33
 # CELLA DI CARICO
 LC_DT = D21
 LC_SCK = D22
-#LC_DT = D36 # testati
-#LC_SCK = D34
-# fotocamera testati 
+# ARDUCAM
 CAM_CS = D5
 CAM_SCK = D18
 CAM_MISO = D19
 CAM_MOSI = D23
 CAM_SCL = D17
 CAM_SDA = D16
-# testato
+# SERVO
 SERVO_PIN = D3
-WL_SENS = D39 # testato 
-WL_POW = D13 # testato 
-# non testato
+# WATER LEVEL SENSOR
+WL_SENS = D39 
+WL_POW = D13 
+# POMPA IDRAULICA (non testato)
 PUMP = D15

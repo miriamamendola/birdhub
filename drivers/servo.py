@@ -1,14 +1,12 @@
 ### SERVOMOTORE
 import gpio
 import pwm
-# TODO angolo come parametro di configurazione del sistema
-PIN_SERVO = D25
 
-# parametro di configurazione (l'angolo non è perfettamente 90 gradi, se lo calibro si
+# K è un parametro di configurazione (l'angolo non è perfettamente 90 gradi, se lo calibro si
 # 1500 è un buon valore)
 
 class Servo():
-    def __init__(self, pin=PIN_SERVO):
+    def __init__(self, pin):
         self.pin = pin
         self.period = 20000
         self.K = 1500

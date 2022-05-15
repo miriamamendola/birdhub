@@ -3,7 +3,7 @@ import gpio
 import adc
 
 class Pump():
-    def __init__(self, pump_pin=D23,level_pin=D35, level_power_pin=D5):
+    def __init__(self, pump_pin,level_pin, level_power_pin):
         self.pump_pin = pump_pin
         self.level_pin = level_pin
         self.level_power_pin = level_power_pin

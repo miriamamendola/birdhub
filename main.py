@@ -37,20 +37,19 @@ gpio.mode(pins.PIR_PIN, INPUT)
 food_us = hcsr04.HCSR04(pins.TRIG_FS, pins.ECHO_FS)
 water_us = hcsr04.HCSR04(pins.TRIG_WS, pins.ECHO_WS)
 load_cell = hx711.HX711(pins.LC_DT, pins.LC_SCK)
-servo = servo.Servo(pin=pins.SERVO_PIN)
-pump_system = pump.Pump(pump_pin=pins.PUMP, level_pin=pins.WL_SENS, level_power_pin=pins.WL_POW)
+servo = servo.Servo(pins.SERVO_PIN)
+pump_system = pump.Pump(pins.PUMP, pins.WL_SENS,pins.WL_POW)
 
 print("Initializing camera...")
 arduchip = arduchip.Arduchip(nss=D5)
 internal_sensor = OV2640.OV2640()
 arducam_setup.init_camera(arduchip, internal_sensor)
 
-
 print("Initializing load cell...")
 print("Starting calibration...")
+# TODO sostituire con la funzione calibrate
 try:
     load_cell.tare()
-
     print("Place tare")
     sleep(5000)
     print("Calibrating...")
@@ -63,8 +62,14 @@ except IOError as e:
 print("Configuring MQTT client...")
 mqtt_client = mqtt.MQTT("test.mosquitto.org", "09")
 
-def calibration(client : mqtt.MQTT, topic : str, message):
-    print(topic)
+def calibration(client : mqtt.MQTT, topic : str, message : str) -> None:
+    """Funzione di callback MQTT.
+    
+    Questa funzione viene chiamata quando viene ricevuto un messaggio MQTT con topic
+    "birdhub/loadCell/" e suoi subtopic. Consente di tarare la cella di carico attraverso
+    il metodo della classe HX711 ed eseguire la calibrazione della cella, ricevendo il peso
+    noto dal messaggio MQTT.
+    """
 
     if 'tare' in topic:
         print("Tare...")
@@ -85,14 +90,19 @@ def calibration(client : mqtt.MQTT, topic : str, message):
             
 
 mqtt_client.on("birdhub/loadCell/+", calibration)
-# aggiungere le altre callback
+#TODO aggiungere le altre callback
 
 
-#### THREADING ####
+#### THREADS ####
 
-lock = threading.Lock()
-# da cambiare
-def pir_routine():
+def pir_routine() -> None:
+    """Metodo eseguito da un thread per il controllo della rilevazione di movimento.
+    
+    Quando il sensore di prossimità ad infrarossi rileva movimento, l'evento viene comunicato alla ZDM
+    e viene scattata una foto. La foto viene salvata all'interno di un bytearray e inviata tramite 
+    una richiesta HTTP di POST all'endpoint '/cam' definito sul webserver del progetto. La rilevazione rimane
+    bloccata fintanto che il webserver non accetta la richiesta di POST, la quale viene reiterata in caso di errore.
+    """
     client = http.HTTP()
 
     CAM_ROUTE = "http://192.168.1.128:5000/cam"
@@ -104,9 +114,9 @@ def pir_routine():
             continue
         sleep(2000)
         agent.publish({"value": 1}, "pir")
-        lock.acquire()
+        
         buf = arduchip.take_photo()
-        lock.release()
+        
         while True:
             print("Sending...")
 
@@ -124,16 +134,23 @@ def pir_routine():
         while pir == HIGH:
             pir = gpio.get(pins.PIR_PIN)
 
-def check_up():
-    
+def check_up() -> None:
+    """Metodo eseguito da un thread per il controllo dei serbatoi di acqua e mangime.
+
+    Inizialmente, sono comunicati alla ZDM i dati relativi alla quantità di acqua e mangime
+    presenti all'interno dei serbatoi. Se la quantità presente è sufficiente (ossia supera una certa
+    soglia definita dall'utente) la ciotola per il mangime e/o la ciotola per l'acqua sono riempite
+    (fino ad una soglia definita dall'utente).
+
+    Il controllo viene eseguito ogni CHECKING_TIME.
+    """
     CHECKING_TIME = 5000
     
     while True:
         
         print("Sending data to the cloud...")
-        lock.acquire()
-        try:
-            
+        
+        try:  #TODO rendere il valore inviato in percentuale rispetto alla dimensione del serbatoio
             food_storage = food_us.get_distance()
             agent.publish({"value": food_storage}, "food_storage")
             water_storage = water_us.get_distance()
@@ -168,7 +185,8 @@ def check_up():
                 
             except IOError as e:
                 print("Internal load cell error.")
-                
+        else:
+            print("Not enough food in the storage!")        
                 
         if water_storage > WATER_STORAGE_THRESH:
 
@@ -181,13 +199,22 @@ def check_up():
                         sleep(500)
                 pump_system.pump()
                 water_level = pump_system.get_water_level()
+        else:
+            print("Not enough water in the storage!")        
         
         print("Checkup's over!")
-        lock.release()
+    
         sleep(CHECKING_TIME)
         
 while True:
-    
+    """Logica principale del programma.
+
+    La board viene connessa ad internet tramite la libreria wifi, sono inizializzati i client MQTT e ZDM e
+    vengono fatti partire i thread. Il ciclo resta bloccato dalla chiamata loop del client MQTT e viene rieseguito
+    solo in caso di eccezioni catturate dalla `except`. Le eccezioni gestite sono relative ai moduli wifi, zdm ed mqtt.
+    Le eccezioni lanciate dai thread sono gestite all'interno delle funzioni di threading, onde evitare UnhandledException
+    Error.
+    """
     try:
         print("Configuring wifi...")
         wifi.configure(
@@ -203,8 +230,6 @@ while True:
 
         print("MQTT client is connected.")
 
-        print("Starting threads...")
-    
         agent = zdm.Agent()
         agent.start()
 
@@ -213,6 +238,8 @@ while True:
             sleep(1000)
 
         print("ZDM is online: ", agent.online())
+        
+        print("Starting threads...")
 
         pir_t = threading.Thread(target=pir_routine)
         pir_t.start()
@@ -221,14 +248,7 @@ while True:
         check_t.start()
 
         mqtt_client.loop()
-        # inserire qui registrazioni callback
-        # CHECKING_TIME = 10*60*1000    
-
-        # quando da un guru meditation error: o una eccezione è stata rilanciata oppure
-        # ci si sta sconnettendo dal wifi quando non si dovrebbe
-        # importante se un thread si blocca fare attenzione che l'altro non sia in 
-        # attesa attiva tipo while TRue
-
+        
     except WifiBadPassword:
         print("Bad Password")
     except WifiBadSSID:
@@ -239,7 +259,7 @@ while True:
         print(e)
     finally:
         pir_t.join()
-        #check_t.join()
+        check_t.join()
         agent.stop()
         mqtt_client.disconnect()
         wifi.stop()
