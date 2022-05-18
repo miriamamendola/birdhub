@@ -10,12 +10,13 @@ C_NATIVE(_read_time){
 
     trig_pin = PYC_ARG_INT(0);
     echo_pin = PYC_ARG_INT(1);
-    /* Configurazione dei pin */
-    vhalPinSetMode(trig_pin,PINMODE_OUTPUT_PUSHPULL,EXT_INTR_DISABLE);
-    vhalPinSetMode(echo_pin,PINMODE_INPUT_PULLNONE,EXT_INTR_DISABLE);
     
     /* Rilascio del mutex da parte dell'interprete Python */
     RELEASE_GIL();
+    
+    /* Configurazione dei pin */
+    vhalPinSetMode(trig_pin,PINMODE_OUTPUT_PUSHPULL,EXT_INTR_DISABLE);
+    vhalPinSetMode(echo_pin,PINMODE_INPUT_PULLNONE,EXT_INTR_DISABLE);
     /* Da specifica, per avviare una lettura è necessario attivare il pin
      * trigger per 10 usec */
     vhalPinWrite(trig_pin, 1);

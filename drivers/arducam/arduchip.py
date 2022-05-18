@@ -113,7 +113,7 @@ class Arduchip():
         reg = self.read_reg(STATUS_REGISTER)
         return True if ((reg & 0x08) >> 3) == 1 else False
 
-    def take_photo(self) -> bytearray:
+    def take_photo(self):
         """Metodo di "interfaccia" per scattare una foto.
 
         Questo metodo scatta una foto, attende il caricamento nel buffer e richiama
@@ -134,7 +134,7 @@ class Arduchip():
         print("Capture done")
         return self.read_fifo_burst()
 
-    def read_fifo_burst(self) -> bytearray:
+    def read_fifo_burst(self):
         """Metodo per leggere dal buffer usando la modalità _burst_.
 
         Il sensore interno della fotocamera viene impostato, per questa specifica applicazione,
