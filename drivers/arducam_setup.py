@@ -1,6 +1,12 @@
 from drivers.arducam import config, arduchip, OV2640
 
-def init_camera(arduchip, internal_sensor):
+def init_camera(arduchip : arduchip.Arduchip, internal_sensor : OV2640.OV2640) -> None:
+    """Questa funzione inizializza la comunicazione SPI e il sensore interno.
+
+    Inizialmente, viene verificato il funzionamento dell'interfaccia SPI e dell'interfaccia I2C
+    leggendo all'interno di registri di cui il contenuto è noto. Dopo aver eseguito il reset del sensore
+    interno, questo viene configurato attraverso le tuple contenute nel file config.py.
+    """
     print("Checking SPI BUS...")
     t = 0
     while t != 0x55:
@@ -15,7 +21,6 @@ def init_camera(arduchip, internal_sensor):
         internal_sensor.write_reg(0xff, 0x01)
         vid = internal_sensor.read_reg(0x0A)
         pid = internal_sensor.read_reg(0x0B)
-        # print(vid, pid)
     print("Internal sensor is ready")
 
     print("Internal sensor reset...")

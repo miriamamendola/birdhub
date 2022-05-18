@@ -1,5 +1,13 @@
-# source
-# https://raw.githubusercontent.com/ArduCAM/Arduino/master/ArduCAM/ov2640_regs.h
+"""Le seguenti tuple sono usate per la configurazione del sensore OV2640.
+Rappresentano le scritture da effettuare nei registri interni per:
+1. Inizializzazione (JPG_INIT)
+2. Impostazione dei colori (JPG_YUV)
+3. Settaggio del formato JPG (JPG_CONF)
+4. Settaggio della risoluzione (JPG_RES), fissata a 320x240
+
+Queste impostazioni sono state recuperate dalla repository:
+(OV2640)[https://raw.githubusercontent.com/ArduCAM/Arduino/master/ArduCAM/ov2640_regs.h]
+"""
 
 JPG_INIT  = (
 ( 0xff, 0x00 ),

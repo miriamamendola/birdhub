@@ -5,7 +5,7 @@ import pwm
 class Servo():
     """Classe per la gestione del servo SG90. 
     Il servomotore viene comandato tramite PWM. La costante `PERIOD` contiene il 
-    periodo con cui emettere il segnale PWM ed è presa dal datasheet. Il parametro `k`
+    periodo con cui emettere il segnale PWM ed è presa dal datasheet. Il parametro `K`
     definisce la variazione rispetto alla posizione di riferimento (in cui la variabile pulse è a
     1500).
     """
@@ -19,7 +19,8 @@ class Servo():
         """Funzione che aziona il servo.
 
         Il servo viene ruotato di un certo angolo, `angle`, per versare il mangime all'interno
-        del serbatoio, trovandosi in posizione di _apertura_. Dopo un certo tempo di attesa pari a `wait_time`, il servo ritorna nella posizione iniziale, trovandosi in posizione di _chiusura_. 
+        del serbatoio, trovandosi in posizione di _apertura_. Dopo un certo tempo di attesa pari 
+        a `wait_time`, il servo ritorna nella posizione iniziale, trovandosi in posizione di _chiusura_. 
 
         Args:
             angle: l'angolo di rotazione del servomotore.
